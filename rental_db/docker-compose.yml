@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  rental-db:
+    image: postgres:16-alpine
+    container_name: rental_postgres_db
+    environment:
+      POSTGRES_DB: equipment_rental_db
+      POSTGRES_USER: machinery_admin
+      POSTGRES_PASSWORD: super_secret_pass_2026
+    volumes:
+      - rental_pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - rental-tier
+
+volumes:
+  rental_pg_data:
+
+networks:
+  rental-tier:
+    driver: bridge
