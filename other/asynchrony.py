@@ -153,27 +153,51 @@
 
 
 # Асинхронный чек эдпоинтов
-import asyncio
-import random
+# import asyncio
+# import random
 
-async def api_call(endpoint: str) -> int:
-    await asyncio.sleep(random.uniform(0.1, 1.0))
-    if random.random() < 0.3:
-        raise ConnectionError(f"fail: {endpoint}")
-    return 200
-
-
-ENDPOINTS = [f"/api/{i}" for i in range(6)]
+# async def api_call(endpoint: str) -> int:
+#     await asyncio.sleep(random.uniform(0.1, 1.0))
+#     if random.random() < 0.3:
+#         raise ConnectionError(f"fail: {endpoint}")
+#     return 200
 
 
-async def run_all(endpoints: list[str]) -> list:
-    task = await asyncio.gather(*[api_call(x) for x in endpoints], return_exceptions=True)
-    return task
+# ENDPOINTS = [f"/api/{i}" for i in range(6)]
 
 
-async def main():
-    results = await run_all(ENDPOINTS)
-    for ep, r in zip(ENDPOINTS, results):
-        print(f"{ep}: {r!r}")
+# async def run_all(endpoints: list[str]) -> list:
+#     task = await asyncio.gather(*[api_call(x) for x in endpoints], return_exceptions=True)
+#     return task
 
-asyncio.run(main())
+
+# async def main():
+#     results = await run_all(ENDPOINTS)
+#     for ep, r in zip(ENDPOINTS, results):
+#         print(f"{ep}: {r!r}")
+
+# asyncio.run(main())
+
+
+import httpx
+
+
+try:
+    r = httpx.get('http://this-domain-does-not-exist-12345.com', timeout=2.0) 
+    r.raise_for_status()
+except httpx.ConnectError as exc:
+    print(f"Сетевая ошибка: {exc.request.url!r} {exc} ")
+
+try:
+    r = httpx.get('http://127.0.0.1:9999', timeout=2.0) 
+    r.raise_for_status()
+except httpx.ConnectError as exc:
+    print(f"Сетевая ошибка: {exc.request.url!r} {exc}")
+except httpx.ConnectTimeout as exc:
+    print(f"Сетевая ошибка: {exc.request.url!r} {exc}")
+
+try:
+    r = httpx.get('https://httpbin.org/delay/5', timeout=1.0) 
+    r.raise_for_status()
+except httpx.ReadTimeout as exc:
+    print(f"Сетевая ошибка: {exc.request.url!r} {exc}")
