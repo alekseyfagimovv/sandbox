@@ -33,50 +33,78 @@
 # def test_program_name_start():
 #     assert get_start('program_name') == False
 
+# import pytest
+
+# def validate_nickname(nickname: str) -> bool:
+#     if not (3 <= len(nickname) <= 16):
+#         return False
+#     if not nickname[0].isalpha() or not nickname[0].isascii():
+#         return False
+#     for ch in nickname:
+#         if not (ch.isalnum() or ch == "_"):
+#             return False
+#         if ch.isalpha() and not ch.isascii():
+#             return False
+#     return True
+
+# import pytest
+
+# @pytest.mark.parametrize("nickname, expected", [
+#     # --- границы длины ---
+#     pytest.param("ab", False, id="2 символа — ниже минимума"),
+#     pytest.param("abc", True, id="3 символа — нижняя граница"),
+#     pytest.param("abcd", True, id="4 символа — чуть выше нижней"),
+#     pytest.param("a" * 15, True, id="15 символов — чуть ниже верхней"),
+#     pytest.param("a" * 16, True, id="16 символов — верхняя граница"),
+#     pytest.param("a" * 17, False, id="17 символов — выше максимума"),
+
+#     # --- первый символ не буква ---
+#     pytest.param("1ab", False, id="начинается с цифры"),
+#     pytest.param("_ab", False, id="начинается с подчёркивания"),
+
+#     # --- недопустимые символы ---
+#     pytest.param("ab c", False, id="пробел"),
+#     pytest.param("ab-c", False, id="дефис"),
+#     pytest.param("ab.c", False, id="точка"),
+#     pytest.param("$$$", False, id="символы"),
+
+#     # --- не-ASCII ---
+#     pytest.param("йван", False, id="кириллица — не ASCII"),
+
+#     # --- пустое / None-подобное ---
+#     pytest.param("", False, id="пустая строка"),
+
+#     # --- позитив ---
+#     pytest.param("abc", True, id="просто буквы"),
+#     pytest.param("User_123", True, id="буквы + цифры + подчёркивание"),
+# ])
+# def test_validate_nickname(nickname, expected):
+#     assert validate_nickname(nickname) == expected
+
+
 import pytest
 
-def validate_nickname(nickname: str) -> bool:
-    if not (3 <= len(nickname) <= 16):
-        return False
-    if not nickname[0].isalpha() or not nickname[0].isascii():
-        return False
-    for ch in nickname:
-        if not (ch.isalnum() or ch == "_"):
-            return False
-        if ch.isalpha() and not ch.isascii():
-            return False
-    return True
 
-import pytest
+def divide(a: float, b: float) -> float:
+    if b == 0:
+        raise ZeroDivisionError("Cannot divide by zero")
+    return a / b
 
-@pytest.mark.parametrize("nickname, expected", [
-    # --- границы длины ---
-    pytest.param("ab", False, id="2 символа — ниже минимума"),
-    pytest.param("abc", True, id="3 символа — нижняя граница"),
-    pytest.param("abcd", True, id="4 символа — чуть выше нижней"),
-    pytest.param("a" * 15, True, id="15 символов — чуть ниже верхней"),
-    pytest.param("a" * 16, True, id="16 символов — верхняя граница"),
-    pytest.param("a" * 17, False, id="17 символов — выше максимума"),
+@pytest.fixture
+def test_data():
+    data = [1.2, 3.1]
+    yield data
+    print("teardown!")
 
-    # --- первый символ не буква ---
-    pytest.param("1ab", False, id="начинается с цифры"),
-    pytest.param("_ab", False, id="начинается с подчёркивания"),
-
-    # --- недопустимые символы ---
-    pytest.param("ab c", False, id="пробел"),
-    pytest.param("ab-c", False, id="дефис"),
-    pytest.param("ab.c", False, id="точка"),
-    pytest.param("$$$", False, id="символы"),
-
-    # --- не-ASCII ---
-    pytest.param("йван", False, id="кириллица — не ASCII"),
-
-    # --- пустое / None-подобное ---
-    pytest.param("", False, id="пустая строка"),
-
-    # --- позитив ---
-    pytest.param("abc", True, id="просто буквы"),
-    pytest.param("User_123", True, id="буквы + цифры + подчёркивание"),
+@pytest.mark.parametrize("data, result", [
+    pytest.param([1.2, 3.1], 0.3870967741935484, id="test_data 1.2, 3.1"),
+    pytest.param([3, 3], 1, id="data 3, 3"),
 ])
-def test_validate_nickname(nickname, expected):
-    assert validate_nickname(nickname) == expected
+def test_divide_positive(data, result):
+    i, b = data
+    assert divide(i, b) == result
+
+def test_divide_by_zero():
+    with pytest.raises(ZeroDivisionError) as err:
+        divide(2, 0)
+    assert "Cannot divide by zero" in str(err.value)
