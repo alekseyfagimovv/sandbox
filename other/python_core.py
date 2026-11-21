@@ -250,13 +250,105 @@
 
 
 
-def generate_boundary_tests(min_val: int, max_val: int) -> list[int]:
-    if min_val > max_val:
-        raise ValueError("Макс. число не может быть меньше мин. ")
-    return sorted({
-        min_val - 1, min_val, min_val + 1,
-        max_val - 1, max_val, max_val + 1
-    })
+# def generate_boundary_tests(min_val: int, max_val: int) -> list[int]:
+#     if min_val > max_val:
+#         raise ValueError("Макс. число не может быть меньше мин. ")
+#     return sorted({
+#         min_val - 1, min_val, min_val + 1,
+#         max_val - 1, max_val, max_val + 1
+#     })
  
-res = generate_boundary_tests(5, 6)
-print(res)
+# res = generate_boundary_tests(5, 6)
+# print(res)
+
+
+from functools import wraps
+import httpx
+   
+def retry(times=3):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            attempts = times
+            while attempts > 0:
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    attempts -= 1
+                    print(f"Ошибка {e}! Осталось попыток: {attempts}")
+                    if attempts == 0:
+                        raise
+        return wrapper
+    return decorator
+
+@retry(times=3)
+def request():
+    r = httpx.get("https://wikimapia.org/")
+    print(r.status_code)
+
+request()
+
+
+
+from functools import wraps
+import time
+
+def timer():
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+                start = time.perf_counter()
+                result = func(*args, **kwargs)
+                elapsed = time.perf_counter() - start
+                print(f"Функция {func.__name__} выполнилась за {elapsed} сек")
+                return result
+        return wrapper
+    return decorator
+
+
+@timer()
+def request():
+    r = httpx.get("https://wikimapia.org/")
+    print(r.status_code)
+
+request()
+
+count = 0
+def count_calls(reset=False):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            global count
+            if reset:
+                count = 0
+            count += 1
+            print(f"Функция {func.__name__} вызвана {count} раз")
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+@count_calls(reset=True)
+def any():
+    print("done!")
+
+any()
+ 
+
+import time
+
+class TimerContext:
+    def __enter__(self):
+        self.start = time.perf_counter()
+        return self  # Можно вернуть self, чтобы использовать внутри with
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        elapsed = time.perf_counter() - self.start
+        print(f"Блок выполнился за {elapsed} сек")
+        return False  # Не проглатываем исключения
+
+# Использование:
+with TimerContext():
+    time.sleep(0.5)  # Какой-то код
+# Вывод: Блок выполнился за 0.500... сек
+
