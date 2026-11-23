@@ -82,29 +82,50 @@
 #     assert validate_nickname(nickname) == expected
 
 
+# import pytest
+
+
+# def divide(a: float, b: float) -> float:
+#     if b == 0:
+#         raise ZeroDivisionError("Cannot divide by zero")
+#     return a / b
+
+# @pytest.fixture
+# def test_data():
+#     data = [1.2, 3.1]
+#     yield data
+#     print("teardown!")
+
+# @pytest.mark.parametrize("data, result", [
+#     pytest.param([1.2, 3.1], 0.3870967741935484, id="test_data 1.2, 3.1"),
+#     pytest.param([3, 3], 1, id="data 3, 3"),
+# ])
+# def test_divide_positive(data, result):
+#     i, b = data
+#     assert divide(i, b) == result
+
+# def test_divide_by_zero():
+#     with pytest.raises(ZeroDivisionError) as err:
+#         divide(2, 0)
+#     assert "Cannot divide by zero" in str(err.value)
+
 import pytest
-
-
-def divide(a: float, b: float) -> float:
-    if b == 0:
-        raise ZeroDivisionError("Cannot divide by zero")
-    return a / b
+import os
 
 @pytest.fixture
-def test_data():
-    data = [1.2, 3.1]
-    yield data
-    print("teardown!")
+def temp_file():
+    path = "test_data.txt"
+    with open(path, "w") as f:
+        f.write("test")
+    yield path          # отдаём тесту путь
+    os.remove(path)     # уборка после теста
 
-@pytest.mark.parametrize("data, result", [
-    pytest.param([1.2, 3.1], 0.3870967741935484, id="test_data 1.2, 3.1"),
-    pytest.param([3, 3], 1, id="data 3, 3"),
+@pytest.mark.parametrize("num, result", [
+    pytest.param(7, False, id="7"),
+    pytest.param(8, True, id="8"),
+    pytest.param(20, True, id="20"),
+    pytest.param(21, False, id="21")
 ])
-def test_divide_positive(data, result):
-    i, b = data
-    assert divide(i, b) == result
-
-def test_divide_by_zero():
-    with pytest.raises(ZeroDivisionError) as err:
-        divide(2, 0)
-    assert "Cannot divide by zero" in str(err.value)
+def test_is_valid_password(num, result):
+    assert num == result
+ 

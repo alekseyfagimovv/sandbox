@@ -179,25 +179,47 @@
 # asyncio.run(main())
 
 
-import httpx
+# import httpx
 
 
-try:
-    r = httpx.get('http://this-domain-does-not-exist-12345.com', timeout=2.0) 
-    r.raise_for_status()
-except httpx.ConnectError as exc:
-    print(f"Сетевая ошибка: {exc.request.url!r} {exc} ")
+# try:
+#     r = httpx.get('http://this-domain-does-not-exist-12345.com', timeout=2.0) 
+#     r.raise_for_status()
+# except httpx.ConnectError as exc:
+#     print(f"Сетевая ошибка: {exc.request.url!r} {exc} ")
 
-try:
-    r = httpx.get('http://127.0.0.1:9999', timeout=2.0) 
-    r.raise_for_status()
-except httpx.ConnectError as exc:
-    print(f"Сетевая ошибка: {exc.request.url!r} {exc}")
-except httpx.ConnectTimeout as exc:
-    print(f"Сетевая ошибка: {exc.request.url!r} {exc}")
+# try:
+#     r = httpx.get('http://127.0.0.1:9999', timeout=2.0) 
+#     r.raise_for_status()
+# except httpx.ConnectError as exc:
+#     print(f"Сетевая ошибка: {exc.request.url!r} {exc}")
+# except httpx.ConnectTimeout as exc:
+#     print(f"Сетевая ошибка: {exc.request.url!r} {exc}")
 
-try:
-    r = httpx.get('https://httpbin.org/delay/5', timeout=1.0) 
-    r.raise_for_status()
-except httpx.ReadTimeout as exc:
-    print(f"Сетевая ошибка: {exc.request.url!r} {exc}")
+# try:
+#     r = httpx.get('https://httpbin.org/delay/5', timeout=1.0) 
+#     r.raise_for_status()
+# except httpx.ReadTimeout as exc:
+#     print(f"Сетевая ошибка: {exc.request.url!r} {exc}")
+
+
+import asyncio
+import time
+
+async def check_api(api_id: int):
+    await asyncio.sleep(1)
+
+
+async def main():
+    start = time.perf_counter()
+    await asyncio.gather(
+        check_api(1),
+        check_api(1),
+        check_api(1),
+        return_exceptions=True
+    )
+    elapsed = round((time.perf_counter() - start), 2)
+    print(f"Корутины {check_api.__name__} выполнилась за {elapsed} секунд")
+
+asyncio.run(main())
+ 
