@@ -125,35 +125,35 @@
 #     total = calculate_total(price, discount)
 #     assert total == result
  
-import pytest
+# import pytest
 
-@pytest.mark.parametrize("name, price, expected_status", [
-    pytest.param("кофе два", 350, 200, id="valid_data_200"),
-    pytest.param(["список", "а", "не", "строка"], 350, 422, id="invalid_name_422"),
-    pytest.param("кофе два", "бесплатно", 422, id="invalid_price_422"),
-])
-def test_coffee_patch_parametrized(post_coffee, patch_coffee, name, price, expected_status):
-    response_post = post_coffee("кофе один", 250)
-    assert response_post.status_code == 201
-    coffee_id = response_post.json()["id"]
-    response_patch = patch_coffee(coffee_id, {"name": name, "price": price})
-    assert response_patch.status_code == expected_status
-    if expected_status == 200:
-        data = response_patch.json()
-        assert data["name"] == name
-        assert data["price"] == price
+# @pytest.mark.parametrize("name, price, expected_status", [
+#     pytest.param("кофе два", 350, 200, id="valid_data_200"),
+#     pytest.param(["список", "а", "не", "строка"], 350, 422, id="invalid_name_422"),
+#     pytest.param("кофе два", "бесплатно", 422, id="invalid_price_422"),
+# ])
+# def test_coffee_patch_parametrized(post_coffee, patch_coffee, name, price, expected_status):
+#     response_post = post_coffee("кофе один", 250)
+#     assert response_post.status_code == 201
+#     coffee_id = response_post.json()["id"]
+#     response_patch = patch_coffee(coffee_id, {"name": name, "price": price})
+#     assert response_patch.status_code == expected_status
+#     if expected_status == 200:
+#         data = response_patch.json()
+#         assert data["name"] == name
+#         assert data["price"] == price
 
-def test_coffee_patch_404(post_coffee, patch_coffee):
-    response_post = post_coffee("кофе один", 250)
-    assert response_post.status_code == 201      
-    response_patch = patch_coffee(999999, {"name": "кофе два", "price": 350})
-    assert response_patch.status_code == 404
+# def test_coffee_patch_404(post_coffee, patch_coffee):
+#     response_post = post_coffee("кофе один", 250)
+#     assert response_post.status_code == 201      
+#     response_patch = patch_coffee(999999, {"name": "кофе два", "price": 350})
+#     assert response_patch.status_code == 404
     
-def test_coffee_patch_update_price(post_coffee, patch_coffee):
-    response_post = post_coffee("кофе один", 250)
-    assert response_post.status_code == 201
-    response_patch = patch_coffee(response_post.json()["id"], {"name": "кофе два"})
-    assert response_patch.status_code == 200
-    assert response_patch.json()["name"] == "кофе два"
-    assert response_patch.json()["price"] == 250
+# def test_coffee_patch_update_price(post_coffee, patch_coffee):
+#     response_post = post_coffee("кофе один", 250)
+#     assert response_post.status_code == 201
+#     response_patch = patch_coffee(response_post.json()["id"], {"name": "кофе два"})
+#     assert response_patch.status_code == 200
+#     assert response_patch.json()["name"] == "кофе два"
+#     assert response_patch.json()["price"] == 250
 

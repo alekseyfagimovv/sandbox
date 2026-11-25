@@ -13,6 +13,7 @@ dependencies = [
     "httpx>=0.28.1",
     "pyjwt>=2.15.1",
     "pytest>=9.1.1",
+    "pytest-asyncio>=1.5.0",
     "uvicorn>=0.54.0",
 ]
 
@@ -22,3 +23,5 @@ sandbox = "sandbox:main"
 [build-system]
 requires = ["uv_build>=0.13.6,<0.14.0"]
 build-backend = "uv_build"
+[tool.uv]
+package = false

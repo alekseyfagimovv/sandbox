@@ -109,23 +109,34 @@
 #         divide(2, 0)
 #     assert "Cannot divide by zero" in str(err.value)
 
-import pytest
-import os
+# import pytest
+# import os
 
-@pytest.fixture
-def temp_file():
-    path = "test_data.txt"
-    with open(path, "w") as f:
-        f.write("test")
-    yield path          # отдаём тесту путь
-    os.remove(path)     # уборка после теста
+# @pytest.fixture
+# def temp_file():
+#     path = "test_data.txt"
+#     with open(path, "w") as f:
+#         f.write("test")
+#     yield path          # отдаём тесту путь
+#     os.remove(path)     # уборка после теста
 
-@pytest.mark.parametrize("num, result", [
-    pytest.param(7, False, id="7"),
-    pytest.param(8, True, id="8"),
-    pytest.param(20, True, id="20"),
-    pytest.param(21, False, id="21")
-])
-def test_is_valid_password(num, result):
-    assert num == result
+# @pytest.mark.parametrize("num, result", [
+#     pytest.param(7, False, id="7"),
+#     pytest.param(8, True, id="8"),
+#     pytest.param(20, True, id="20"),
+#     pytest.param(21, False, id="21")
+# ])
+# def test_is_valid_password(num, result):
+#     assert num == result
  
+
+import httpx
+import pytest
+
+
+@pytest.mark.asyncio
+async def test_timeout():
+    async with httpx.AsyncClient() as client:
+        with pytest.raises(httpx.TimeoutException):
+            await client.get("https://httpbin.org/delay/2", timeout=1.0)
+
