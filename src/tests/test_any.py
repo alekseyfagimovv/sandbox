@@ -130,13 +130,40 @@
 #     assert num == result
  
 
-import httpx
-import pytest
+# import httpx
+# import pytest
 
+
+# @pytest.mark.asyncio
+# async def test_timeout():
+#     async with httpx.AsyncClient() as client:
+#         with pytest.raises(httpx.TimeoutException):
+#             await client.get("https://httpbin.org/delay/2", timeout=1.0)
+
+#  не дописал, не хватило времени и сил
+
+import asyncio
+import pytest
+from unittest.mock import patch
+from unittest.mock import AsyncMock
+
+
+async def fetch_with_retry(client, user_id, retries=3, delay=0.1):
+    for i in range(retries): 
+        try:
+            return await client.get(user_id)
+        except (TimeoutError, ConnectionError):
+                await asyncio.sleep(delay)
+                if i == retries - 1:
+                    raise
 
 @pytest.mark.asyncio
-async def test_timeout():
-    async with httpx.AsyncClient() as client:
-        with pytest.raises(httpx.TimeoutException):
-            await client.get("https://httpbin.org/delay/2", timeout=1.0)
+@patch('fetch_with_retry')
+async def test_fetch_with_retry(fetch_with_retry):
+    mock_client = AsyncMock()
+    with pytest.raises(TimeoutError, ConnectionError, ValueError):
+        result = await fetch_with_retry(mock_client, user_id=1)
+        result.assert_called_once_with(1)
 
+
+ 
